@@ -14,7 +14,7 @@
  *        deque                 : A class that represents a deque
  *        deque::iterator       : An iterator through a deque
  * Author
- *    <your names here>
+ *    Brooklyn and Josh 
  ************************************************************************/
 
 #pragma once
@@ -50,6 +50,10 @@ public:
    //
    deque() 
    { 
+       iaFront = 0;
+       numCapacity = 0;
+       numElements = 0;
+       data = (new T);
    }
    deque(int newCapacity);
    deque(const deque <T> & rhs);
@@ -96,6 +100,7 @@ public:
    //
    void clear()
    { 
+       numElements = 0;
    }
    void pop_front();
    void pop_back();
@@ -105,11 +110,11 @@ public:
    //
    size_t size() const 
    { 
-      return 99; 
+      return numCapacity; 
    }
    bool empty() const 
    { 
-      return false; 
+      return numElements == 0; 
    }
 
    
@@ -221,6 +226,7 @@ private:
 template <class T>
 deque <T> :: deque(int newCapacity)
 {
+    numCapacity = newCapacity;
 }
 
 /****************************************************
@@ -229,6 +235,14 @@ deque <T> :: deque(int newCapacity)
 template <class T>
 deque <T> :: deque(const deque <T> & rhs)
 {
+    numCapacity = rhs.numCapacity;
+    data = new T[numCapacity];
+
+    numElements = rhs.numElements;
+    for (int i = 0; i < numElements; i++)
+    {
+        data[i] = rhs.data[i];
+    }
 }
 
 
@@ -326,6 +340,7 @@ void deque <T> :: push_front(const T & t)
 template <class T>
 void deque <T> :: resize(int newCapacity) 
 {
+    numCapacity = newCapacity;
 }
 
 } // namespace custom
