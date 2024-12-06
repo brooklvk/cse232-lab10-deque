@@ -247,8 +247,10 @@ deque <T> :: deque(int newCapacity)
     numCapacity = newCapacity;
     numElements = 0;
     iaFront = 0;
+
     if (numCapacity > 0)
     {
+        // create a new empty container 
         data = new T[numCapacity];
     }
     else
@@ -268,16 +270,18 @@ deque <T> :: deque(const deque <T> & rhs)
 
     if (numCapacity > 0)
     {
+        // create the data container 
         data = new T[numCapacity];
+
         // Copy the elements
         for (size_t i = 0; i < numElements; ++i)
         {
-            data[i] = rhs.data[(rhs.iaFront + i) % rhs.numCapacity];
+            data[i] = rhs.data[(rhs.iaFront + i) % rhs.numCapacity]; // account for capacity when calculating the index of the rhs 
         }
         iaFront = 0;
     }
     else
-    {
+    { // if capacity is 0 empty 
         data = nullptr;
         iaFront = 0;
     }
@@ -295,7 +299,10 @@ deque <T> & deque <T> :: operator = (const deque <T> & rhs)
         delete[] data;
 
         numElements = rhs.numElements;
-        numCapacity = rhs.numCapacity;
+
+        // Only change if rhs is larger, needs to expand, otherwise keep the larger capacity 
+        if (rhs.numCapacity > numCapacity)
+            numCapacity = rhs.numCapacity;
 
         if (numCapacity > 0)
         {
@@ -303,12 +310,12 @@ deque <T> & deque <T> :: operator = (const deque <T> & rhs)
             // Copy the elements
             for (size_t i = 0; i < numElements; ++i)
             {
-                data[i] = rhs.data[(rhs.iaFront + i) % rhs.numCapacity];
+                data[i] = rhs.data[(rhs.iaFront + i) % rhs.numCapacity]; // account for the capacity when calculating the index of the rhs
             }
             iaFront = 0;
         }
         else
-        {
+        { // reset if empty 
             data = nullptr;
             iaFront = 0;
         }
@@ -339,12 +346,14 @@ T& deque <T> ::front()
 template <class T>
 const T & deque <T> :: back() const 
 {
+    // calculate the back index 
     int ia = iaFromID(numElements - 1);
     return data[ia];
 }
 template <class T>
 T& deque <T> ::back()
 {
+    // calculate the back index 
     int ia = iaFromID(numElements - 1);
     return data[ia];
 }
@@ -356,12 +365,14 @@ T& deque <T> ::back()
 template <class T>
 const T& deque <T> ::operator[](size_t index) const
 {
+    // calculate the index 
     int ia = iaFromID(index);
     return data[ia];
 }
 template <class T>
 T& deque <T> ::operator[](size_t index)
 {
+    // calculate the index 
     int ia = iaFromID(index);
     return data[ia];
 }
@@ -381,7 +392,7 @@ void deque <T> :: pop_back()
 template <class T>
 void deque <T> :: pop_front()
 {
-    iaFront = (iaFront + 1) % numCapacity;
+    iaFront = (iaFront + 1) % numCapacity; // set the front index 
     --numElements;
 }
 
@@ -392,10 +403,18 @@ template <class T>
 void deque <T> :: push_back(const T & t) 
 {
     if (numElements == numCapacity)
+        // set capacity to account for adding an element 
+        // if empty only add 1 element 
+        // otherwise double capacity 
         resize(numCapacity == 0 ? 1 : numCapacity * 2);
 
+    // calculate the index 
     int ia = iaFromID(numElements);
+
+    // add element 
     data[ia] = t;
+
+    // there is one more element 
     ++numElements;
 }
 
@@ -406,10 +425,16 @@ template <class T>
 void deque <T> :: push_front(const T & t) 
 {
     if (numElements == numCapacity)
+        // same operation as push back 
         resize(numCapacity == 0 ? 1 : numCapacity * 2);
 
+    // calculate index 
     iaFront = (iaFront - 1 + numCapacity) % numCapacity;
+
+    // add element 
     data[iaFront] = t;
+
+    // there is one more element 
     ++numElements;
 }
 
@@ -420,15 +445,19 @@ void deque <T> :: push_front(const T & t)
 template <class T>
 void deque <T> :: resize(int newCapacity) 
 {
+    // create a temporary container with the correct capacity 
     T* tempData = new T[newCapacity];
 
+    // move current data into temp data so it has correct capacity and data 
     for (size_t i = 0; i < numElements; ++i)
     {
-        tempData[i] = data[iaFromID(i)];
+        tempData[i] = data[iaFromID(i)]; // use iaFromID to calculate the index 
     }
 
+    // set data to the temp container since that is correct now 
     delete[] data;
     data = tempData;
+
     numCapacity = newCapacity;
     iaFront = 0;
 }
